@@ -1,0 +1,26 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name:  nginx-deployment
+spec:
+  schedule: 27 11 * * *
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: nginx-cronjob
+            image: bitnami/kubectl:latest
+            command: ["/bin/sh","-c"]
+            args:            
+            - kubectl apply -f /mnt/deployment.yml
+            volumeMounts:
+            - name: nginx-config-volume
+              mountPath: /mnt
+          volumes:
+          - name: nginx-config-volume
+            configMap:
+              name: nginx-configmaps
+              defaultMode: 0744              
